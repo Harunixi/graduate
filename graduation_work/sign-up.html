@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/ress/dist/ress.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100;300;400;500;700;900&display=swap"
+        rel="stylesheet">
+    <title>ニックネーム登録 | Quiz aRound</title>
+</head>
+
+<body>
+    <div class="wrapper">
+        <header class="header">
+            <h1 class="header__title">Quiz aRound</h1>
+        </header>
+        <main class="main">
+            <h2 class="main__title">ニックネーム登録</h2>
+            <div class="main__form">
+                <label class="main__form-label" for="">ニックネーム</label>
+                <input class="main__form-input" type="text" id="name" name="name">
+                <label class="main__form-label" for="">password(4桁の数字)</label>
+                <input class="main__form-input" type="password" id="pass" name="pass" maxlength="4">
+                <input class="main__form-button" type="submit" name="submit" id="submit" value="登録">
+            </div>
+            <p class="main__link"><a href="index.html">ログイン画面へ</a></p>
+        </main>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/8.7.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+    <script>
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+            apiKey: "AIzaSyA1kdVJsFB32svPdz_2qRUTxOAjobza31g",
+            authDomain: "graduation-work-9120e.firebaseapp.com",
+            projectId: "graduation-work-9120e",
+            storageBucket: "graduation-work-9120e.appspot.com",
+            messagingSenderId: "145859357720",
+            appId: "1:145859357720:web:cd3b7863ae01263bb2a76d",
+            measurementId: "G-NRR2QRJTC6"
+        };
+
+        // idの取得
+        const userName = document.getElementById('name');
+        const userPass = document.getElementById('pass');
+        const submit = document.getElementById('submit');
+        let count = 0;
+        let name = [];
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        let db = firebase.firestore();
+
+        db.collection("user").get().then((docs) => { // 「doc」→「docs」に変更
+
+            console.log('接続完了');
+            console.log(docs);
+            // 「forEach」で1つずつ取り出す
+            docs.forEach((doc) => {
+                console.log(doc.data().name);
+                name.push(doc.data().name);
+            });
+            console.log(name);
+
+        });
+
+        submit.addEventListener('click', () => {
+            const num = Math.floor(Math.random() * 8999) + 1000;
+            if (!userName.value || !userPass.value) {
+                alert('ユーザー名、もしくはパスワードが入力されていません。')
+            } else {
+                if (name.length > 0) {
+                    for (let i = 0; i < name.length; i++) {
+                        if (name[i] == userName.value) {
+                            count++;
+                        }
+                    }
+                }
+                console.log(count);
+                if (count > 0) {
+                    alert('このユーザー名は既に使われています。');
+                } else {
+                    db.collection('user').doc(userName.value).set({
+                        name: userName.value,
+                        pass: userPass.value,
+                        number: num
+                    });
+                    alert(`ユーザーを登録しました。\nユーザー名:${userName.value} \nパスワード:${userPass.value}`);
+                    console.log(userName.value);
+                    console.log(userPass.value);
+                    userName.value = '';
+                    userPass.value = '';
+                }
+            }
+        });
+
+        // db.collection("member").add({
+        //     id: 1,
+        //     name: "kainuma",
+        //     age: 25
+        // });
+        // db.collection("member").doc("trident").set({
+        //     id: 1,
+        //     name: "takagi",
+        //     age: 40
+        // });
+        // db.collection("member").doc("trident").set({
+        //     id: 1,
+        //     name: "takagi hirotaka",
+        // });
+
+    </script>
+</body>
+
+</html>

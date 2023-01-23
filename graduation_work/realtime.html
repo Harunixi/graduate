@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/ress/dist/ress.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100;300;400;500;700;900&display=swap"
+        rel="stylesheet">
+    <title>現在の状況 | Quiz aRound</title>
+</head>
+
+<body>
+    <header class="header">
+        <h1 class="header__title">Quiz aRound</h1>
+    </header>
+    <main class="main">
+        <div class="main__flex">
+            <div class="main__realtime">
+                <h2 class="main__realtime-title">Currently trying to</h2>
+                <div class="main__realtime-flex" id="q1">
+                    <p class="main__realtime-q">Question 1</p>
+                    <p class="main__realtime-member"></p>
+                </div>
+                <div class="main__realtime-flex" id="q2">
+                    <p class="main__realtime-q">Question 2</p>
+                    <p class="main__realtime-member"></p>
+                </div>
+                <div class="main__realtime-flex" id="q3">
+                    <p class="main__realtime-q">Question 3</p>
+                    <p class="main__realtime-member"></p>
+                </div>
+                <div class="main__realtime-flex" id="q4">
+                    <p class="main__realtime-q">Question 4</p>
+                    <p class="main__realtime-member"></p>
+                </div>
+                <div class="main__realtime-flex" id="q5">
+                    <p class="main__realtime-q">Question 5</p>
+                    <p class="main__realtime-member"></p>
+                </div>
+            </div>
+            <div class="main__ranking">
+                <h2 class="main__ranking-title">Ranking</h2>
+                <div class="main__ranking-flex" id="1st">
+                    <p class="main__ranking-rank" id="gold">1st</p>
+                    <p class="main__ranking-name"></p>
+                    <p class="main__ranking-time"></p>
+                </div>
+                <div class="main__ranking-flex" id="2nd">
+                    <p class="main__ranking-rank" id="silver">2nd</p>
+                    <p class="main__ranking-name"></p>
+                    <p class="main__ranking-time"></p>
+                </div>
+                <div class="main__ranking-flex" id="3rd">
+                    <p class="main__ranking-rank" id="bronze">3rd</p>
+                    <p class="main__ranking-name"></p>
+                    <p class="main__ranking-time"></p>
+                </div>
+                <div class="main__ranking-flex" id="4th">
+                    <p class="main__ranking-rank">4th
+                    </p>
+                    <p class="main__ranking-name"></p>
+                    <p class="main__ranking-time"></p>
+                </div>
+                <div class="main__ranking-flex" id="5th">
+                    <p class="main__ranking-rank">5th</p>
+                    <p class="main__ranking-name"></p>
+                    <p class="main__ranking-time"></p>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="https://www.gstatic.com/firebasejs/8.7.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+    <script>
+        window.setTimeout(function () {
+            location.reload();
+        }, 30000);
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+            apiKey: "AIzaSyA1kdVJsFB32svPdz_2qRUTxOAjobza31g",
+            authDomain: "graduation-work-9120e.firebaseapp.com",
+            projectId: "graduation-work-9120e",
+            storageBucket: "graduation-work-9120e.appspot.com",
+            messagingSenderId: "145859357720",
+            appId: "1:145859357720:web:cd3b7863ae01263bb2a76d",
+            measurementId: "G-NRR2QRJTC6"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+
+        let db = firebase.firestore();
+
+        // 時間の取得
+        let name;
+        let user = [];
+        let q1 = document.querySelector("#q1 .main__realtime-member");
+        let q1Count = 0;
+        let q2 = document.querySelector("#q2 .main__realtime-member");
+        let q2Count = 0;
+        let q3 = document.querySelector("#q3 .main__realtime-member");
+        let q3Count = 0;
+        let q4 = document.querySelector("#q4 .main__realtime-member");
+        let q4Count = 0;
+        let q5 = document.querySelector("#q5 .main__realtime-member");
+        let q5Count = 0;
+        db.collection("user").get().then((docs) => { // 「doc」→「docs」に変更
+            // 「forEach」で1つずつ取り出す
+            docs.forEach((doc) => {
+                user.push({ user: doc.data().name, question: doc.data().question, time: (doc.data().hour * 3600) + (doc.data().min * 60) + doc.data().sec });
+                if (doc.data().question == 0) {
+                    q1Count++;
+                } else if (doc.data().question == 1) {
+                    q2Count++;
+                } else if (doc.data().question == 2) {
+                    q3Count++;
+                } else if (doc.data().question == 3) {
+                    q4Count++;
+                } else if (doc.data().question == 4) {
+                    q5Count++;
+                }
+                q1.innerText = q1Count + "名";
+                q2.innerText = q2Count + "名";
+                q3.innerText = q3Count + "名";
+                q4.innerText = q4Count + "名";
+                q5.innerText = q5Count + "名";
+            });
+        });
+    </script>
+</body>
+
+</html>

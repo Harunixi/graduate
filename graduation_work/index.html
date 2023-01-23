@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/ress/dist/ress.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100;300;400;500;700;900&display=swap"
+        rel="stylesheet">
+    <title>ログイン | Quiz aRound</title>
+</head>
+
+<body>
+    <div class="wrapper">
+        <header class="header">
+            <h1 class="header__title">Quiz aRound</h1>
+        </header>
+        <main class="main">
+            <h2 class="main__title">ログイン</h2>
+            <div class="main__form">
+                <label class="main__form-label" for="">ニックネーム</label>
+                <input class="main__form-input" type="text" id="name" name="name">
+                <label class="main__form-label" for="">password(4桁の数字)</label>
+                <input class="main__form-input" type="password" id="pass" name="pass" maxlength="4">
+                <input class="main__form-button" type="submit" id="login" name="login" value="ログイン">
+            </div>
+            <p class="main__link"><a href="sign-up.html">ニックネーム登録へ</a></p>
+        </main>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/8.7.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+    <script>
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+            apiKey: "AIzaSyA1kdVJsFB32svPdz_2qRUTxOAjobza31g",
+            authDomain: "graduation-work-9120e.firebaseapp.com",
+            projectId: "graduation-work-9120e",
+            storageBucket: "graduation-work-9120e.appspot.com",
+            messagingSenderId: "145859357720",
+            appId: "1:145859357720:web:cd3b7863ae01263bb2a76d",
+            measurementId: "G-NRR2QRJTC6"
+        };
+
+        // idの取得
+        const userName = document.getElementById('name');
+        const userPass = document.getElementById('pass');
+        const login = document.getElementById('login');
+        let name = [];
+        let count = 0;
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        let db = firebase.firestore();
+
+        db.collection("user").get().then((docs) => { // 「doc」→「docs」に変更
+
+            // 「forEach」で1つずつ取り出す
+            docs.forEach((doc) => {
+                console.log(doc.data().name);
+                name.push({ 'name': doc.data().name, 'pass': doc.data().pass });
+            });
+            console.log(name);
+            console.log(name.length);
+        });
+
+        login.addEventListener('click', () => {
+            for (let i = 0; i < name.length; i++) {
+                if (name[i].name == userName.value && name[i].pass == userPass.value) {
+                    count++;
+                }
+            }
+            if (count == 0) {
+                alert('ユーザー名、もしくはパスワードが間違っています。')
+            } else {
+                document.cookie = `name=${userName.value}`;
+                document.cookie = `pass=${userPass.value}`;
+                alert('ログインに成功しました！')
+                open("start.html", "_blank");
+            }
+        });
+    </script>
+</body>
+
+</html>

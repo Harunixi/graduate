@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/ress/dist/ress.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100;300;400;500;700;900&display=swap"
+        rel="stylesheet">
+    <title>question 5 | Quiz aRound</title>
+</head>
+
+<body>
+    <div class="wrapper">
+        <header class="header">
+            <h1 class="header__title">Quiz aRound</h1>
+        </header>
+        <main class="main">
+            <h2 class="main__title">Question5</h2>
+            <div class="main__question"></div>
+            <div class="main__form-marubatu">
+                <button class="main__form-tf" id="true">○</button>
+                <button class="main__form-tf" id="false">×</button>
+            </div>
+            <p class="main__result"></p>
+        </main>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/8.7.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+    <script>
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+            apiKey: "AIzaSyA1kdVJsFB32svPdz_2qRUTxOAjobza31g",
+            authDomain: "graduation-work-9120e.firebaseapp.com",
+            projectId: "graduation-work-9120e",
+            storageBucket: "graduation-work-9120e.appspot.com",
+            messagingSenderId: "145859357720",
+            appId: "1:145859357720:web:cd3b7863ae01263bb2a76d",
+            measurementId: "G-NRR2QRJTC6"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+
+        let db = firebase.firestore();
+
+        // 時間の取得
+        let name;
+        let question = [];
+        const num = Math.floor(Math.random() * 5);
+        console.log(num);
+        const questionArea = document.querySelector('.main__question');
+        let answer;
+        const answerArea = document.getElementById('answer');
+        const trueButton = document.getElementById('true');
+        const falseButton = document.getElementById('false');
+        let cookies = document.cookie; //全てのcookieを取り出して
+        let cookiesArray = cookies.split(' ').join('').split(';'); // ;で分割し配列に
+        const result = document.querySelector('.main__result');
+        let questionNum;
+        for (const key of cookiesArray) {
+            const cArray = key.split('=');
+            if (cArray[0] == 'name') {
+                name = cArray[1];
+                console.log(name);
+                db.collection("user").doc(name).get().then((doc) => {
+                    questionNum = doc.data().question;
+                    if (questionNum < 4) {
+                        alert("前の問題を解いてください！！");
+                    } else if (questionNum >= 5) {
+                        alert("この問題は解き終わっています！");
+                    } else {
+                        db.collection("question").doc("question").collection("question5").get().then((docs) => { // 「doc」→「docs」に変更
+                            // 「forEach」で1つずつ取り出す
+                            docs.forEach((doc) => {
+                                question.push({ Q: doc.data().Q, A: doc.data().A });
+                            });
+                            console.log(question[num].Q);
+                            questionArea.innerHTML = question[num].Q;
+                            answer = question[num].A;
+                            console.log(answer);
+                            if (answer == "true") {
+                                trueButton.addEventListener('click', () => {
+                                    db.collection("user").doc(name).set({
+                                        question: 5
+                                    }, { merge: true });
+                                    result.innerHTML = '<span class="red">正解！！</span><br>次のQRコードの場所のヒントは「」、キーワードは「」';
+                                });
+                                falseButton.addEventListener('click', () => {
+                                    result.innerHTML = '<span class="blue">違うよ!</span>';
+                                    window.setTimeout(function () {
+                                        location.reload();
+                                    }, 500);
+                                })
+                            } else {
+                                trueButton.addEventListener('click', () => {
+                                    result.innerHTML = '<span class="blue">違うよ!</span>';
+                                    window.setTimeout(function () {
+                                        location.reload();
+                                    }, 500);
+                                });
+                                falseButton.addEventListener('click', () => {
+                                    db.collection("user").doc(name).set({
+                                        question: 5
+                                    }, { merge: true });
+                                    result.innerHTML = '<span class="red">正解！！</span><br>次のQRコードの場所のヒントは「」、キーワードは「」';
+                                })
+                            }
+                        });
+                    }
+
+                });
+            }
+        }
+        if (!name) {
+            alert("ログインしてください。");
+        }
+    </script>
+</body>
+
+</html>
