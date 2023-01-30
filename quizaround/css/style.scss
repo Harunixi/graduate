@@ -42,6 +42,8 @@ body {
     &__form {
         display: flex;
         flex-direction: column;
+        transition: all .5s;
+        position: inherit;
 
         &-label {
             margin-bottom: 5px;
@@ -86,6 +88,12 @@ body {
                 transform: translateX(5px) translateY(5px);
             }
         }
+    }
+
+    &__watch {
+        font-size: (24/16)+rem;
+        text-align: right;
+        font-weight: bold;
     }
 
     &__link {
@@ -229,5 +237,6 @@ body {
 }
 
 .invisible {
-    display: none;
+    opacity: 0;
+    position: absolute;
 }

@@ -29,6 +29,15 @@
                 <input class="main__form-button" type="submit" name="submit" id="submit" value="最終問題に挑戦する">
             </div>
             <div class="main__form invisible">
+                <p class="main__form-label"><span class="red">注意！！</span><br>
+                    最終問題は制限時間30秒です。下のボタンを押した瞬間に、問題が表示されて時間がスタートします。<br>
+                    時間内に解けなかった場合、もしくは不正解の場合は、キーワードの入力からやり直しになります。<br>
+                    その際に、もし後ろに人が並んでいた場合は、後ろに並び直してください！
+                </p>
+                <input class="main__form-button" type="submit" name="display" id="display" value="問題を表示する">
+            </div>
+            <div class="main__form invisible">
+                <p class="main__watch">30:00</p>
                 <div class="main__question"></div>
                 <label class="main__form-label" for="">回答</label>
                 <input class="main__form-input" type="text" id="answer" name="answer">
@@ -57,6 +66,9 @@
 
         // 時間の取得
         let name;
+        const user = document.getElementById('name');
+        const keyword = document.getElementById('keyword');
+        const form = document.querySelectorAll('.main__form');
         let question = [];
         const num = Math.floor(Math.random() * 9);
         console.log(num);
@@ -66,22 +78,50 @@
         let hour;
         let min;
         let sec;
+        let Tsec = 30;
+        let TMsec = 0;
+        let timer = document.querySelector('.main__watch');
         const answerArea = document.getElementById('answer');
         const button = document.getElementById('button');
-        let cookies = document.cookie; //全てのcookieを取り出して
-        let cookiesArray = cookies.split(' ').join('').split(';'); // ;で分割し配列に
+        const submit = document.getElementById('submit');
+        const display = document.getElementById('display');
         const result = document.querySelector('.main__result');
-        db.collection("question").doc("question").collection("FINAL").get().then((docs) => { // 「doc」→「docs」に変更
-            // 「forEach」で1つずつ取り出す
-            docs.forEach((doc) => {
-                question.push({ Q: doc.data().Q, A: doc.data().A, hint: doc.data().hint });
-            });
-            console.log(question[num].Q);
-            questionArea.innerHTML = question[num].Q;
-            answer = question[num].A;
-            hint = question[num].hint;
-            console.log(hint);
-        });
+
+        submit.addEventListener('click', () => {
+            if (!user.value) {
+                alert('ニックネームが未入力です。')
+            } else {
+                db.collection("user").doc(user.value).get().then((doc) => {
+                    console.log(doc.data().number);
+                    if (!keyword.value) {
+                        alert('キーワードが未入力です。')
+                    } else if (keyword.value == doc.data().number) {
+                        form[0].classList.add('invisible');
+                        form[1].classList.remove('invisible');
+                        name = user.value;
+                    } else {
+                        alert('キーワードが間違っています。')
+                    }
+                })
+            }
+        })
+
+        display.addEventListener('click', () => {
+            form[1].classList.add('invisible');
+            form[2].classList.remove('invisible');
+        })
+
+        // db.collection("question").doc("question").collection("FINAL").get().then((docs) => { // 「doc」→「docs」に変更
+        //     // 「forEach」で1つずつ取り出す
+        //     docs.forEach((doc) => {
+        //         question.push({ Q: doc.data().Q, A: doc.data().A, hint: doc.data().hint });
+        //     });
+        //     console.log(question[num].Q);
+        //     questionArea.innerHTML = question[num].Q;
+        //     answer = question[num].A;
+        //     hint = question[num].hint;
+        //     console.log(hint);
+        // });
         console.log(hint);
         console.log(question);
         button.addEventListener('click', () => {

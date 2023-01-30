@@ -38,6 +38,8 @@ body {
 .main__form {
   display: flex;
   flex-direction: column;
+  transition: all 0.5s;
+  position: inherit;
 }
 .main__form-label {
   margin-bottom: 5px;
@@ -78,6 +80,11 @@ body {
 .main__form-tf:active {
   box-shadow: none;
   transform: translateX(5px) translateY(5px);
+}
+.main__watch {
+  font-size: 1.5rem;
+  text-align: right;
+  font-weight: bold;
 }
 .main__link {
   text-align: right;
@@ -199,6 +206,7 @@ body {
 }
 
 .invisible {
-  display: none;
+  opacity: 0;
+  position: absolute;
 }
 /*# sourceMappingURL=style.css.map */
