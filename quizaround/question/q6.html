@@ -87,6 +87,27 @@
         const display = document.getElementById('display');
         const result = document.querySelector('.main__result');
 
+        let time = function () {
+            if (TMsec > 0) {
+                TMsec--;
+                if (TMsec < 10) {
+                    TMsec = `0${TMsec}`;
+                }
+            } else {
+                if (Tsec > 0) {
+                    TMsec = 99;
+                    Tsec--;
+                    if (Tsec < 10) {
+                        Tsec = `0${Tsec}`;
+                    }
+                } else {
+                    alert("time up!");
+                }
+            }
+            timer.innerText = "";
+            timer.innerText = `${Tsec}:${TMsec}`;
+        };
+
         submit.addEventListener('click', () => {
             if (!user.value) {
                 alert('ニックネームが未入力です。')
@@ -109,6 +130,7 @@
         display.addEventListener('click', () => {
             form[1].classList.add('invisible');
             form[2].classList.remove('invisible');
+            setInterval(time, 10);
         })
 
         // db.collection("question").doc("question").collection("FINAL").get().then((docs) => { // 「doc」→「docs」に変更
