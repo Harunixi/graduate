@@ -87,7 +87,10 @@
                                     db.collection("user").doc(name).set({
                                         question: 5
                                     }, { merge: true });
-                                    result.innerHTML = '<span class="red">正解！！</span><br>次のQRコードの場所のヒントは「」、キーワードは「」';
+                                    db.collection("user").doc(name).get().then((doc) => {
+                                        console.log(doc.data().number)
+                                        result.innerHTML = `<span class="red">正解！！</span><br>最初の場所へ帰還せよ。キーワードは「${doc.data().number}」`;
+                                    });
                                 });
                                 falseButton.addEventListener('click', () => {
                                     result.innerHTML = '<span class="blue">違うよ!</span>';
@@ -106,7 +109,10 @@
                                     db.collection("user").doc(name).set({
                                         question: 5
                                     }, { merge: true });
-                                    result.innerHTML = '<span class="red">正解！！</span><br>次のQRコードの場所のヒントは「」、キーワードは「」';
+                                    db.collection("user").doc(name).get().then((doc) => {
+                                        console.log(doc.data().number)
+                                        result.innerHTML = `<span class="red">正解！！</span><br>最初の場所へ帰還せよ。キーワードは「${doc.data().number}」`;
+                                    });
                                 })
                             }
                         });

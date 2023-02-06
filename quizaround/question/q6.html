@@ -70,16 +70,18 @@
         const keyword = document.getElementById('keyword');
         const form = document.querySelectorAll('.main__form');
         let question = [];
-        const num = Math.floor(Math.random() * 9);
+        const num = Math.floor(Math.random() * 2);
         console.log(num);
         const questionArea = document.querySelector('.main__question');
         let answer;
         let hint;
-        let hour;
-        let min;
-        let sec;
+        let Stime;
+        let Shour = 0;
+        let Smin = 0;
+        let Ssec = 0;
         let Tsec = 30;
         let TMsec = 0;
+        let stop = false;
         let timer = document.querySelector('.main__watch');
         const answerArea = document.getElementById('answer');
         const button = document.getElementById('button');
@@ -88,6 +90,11 @@
         const result = document.querySelector('.main__result');
 
         let time = function () {
+            if (stop) {
+                console.log('処理を一時停止')
+                clearInterval(time);
+                return
+            }
             if (TMsec > 0) {
                 TMsec--;
                 if (TMsec < 10) {
@@ -97,11 +104,18 @@
                 if (Tsec > 0) {
                     TMsec = 99;
                     Tsec--;
+                    if (Tsec < 15) {
+                        result.innerHTML = `ヒント:${hint}`;
+                    }
                     if (Tsec < 10) {
                         Tsec = `0${Tsec}`;
                     }
                 } else {
-                    alert("time up!");
+                    result.innerHTML = '<span class="red">Time UP!</span>'
+                    button.classList.add('invisible');
+                    setTimeout(function () {
+                        location.reload();
+                    }, 3000);
                 }
             }
             timer.innerText = "";
@@ -117,9 +131,9 @@
                     if (!keyword.value) {
                         alert('キーワードが未入力です。')
                     } else if (keyword.value == doc.data().number) {
+                        name = user.value;
                         form[0].classList.add('invisible');
                         form[1].classList.remove('invisible');
-                        name = user.value;
                     } else {
                         alert('キーワードが間違っています。')
                     }
@@ -130,46 +144,91 @@
         display.addEventListener('click', () => {
             form[1].classList.add('invisible');
             form[2].classList.remove('invisible');
-            setInterval(time, 10);
+            const time = setInterval(function () {
+                if (stop) {
+                    console.log('処理を一時停止')
+                    clearInterval(time);
+                    return
+                }
+                if (TMsec > 0) {
+                    TMsec--;
+                    if (TMsec < 10) {
+                        TMsec = `0${TMsec}`;
+                    }
+                } else {
+                    if (Tsec > 0) {
+                        TMsec = 99;
+                        Tsec--;
+                        if (Tsec < 15) {
+                            result.innerHTML = `ヒント:${hint}`;
+                        }
+                        if (Tsec < 10) {
+                            Tsec = `0${Tsec}`;
+                        }
+                    } else {
+                        result.innerHTML = '<span class="red">Time UP!</span>'
+                        button.classList.add('invisible');
+                        setTimeout(function () {
+                            location.reload();
+                        }, 3000);
+                    }
+                }
+                timer.innerText = "";
+                timer.innerText = `${Tsec}:${TMsec}`;
+            }, 10);
         })
 
-        // db.collection("question").doc("question").collection("FINAL").get().then((docs) => { // 「doc」→「docs」に変更
-        //     // 「forEach」で1つずつ取り出す
-        //     docs.forEach((doc) => {
-        //         question.push({ Q: doc.data().Q, A: doc.data().A, hint: doc.data().hint });
-        //     });
-        //     console.log(question[num].Q);
-        //     questionArea.innerHTML = question[num].Q;
-        //     answer = question[num].A;
-        //     hint = question[num].hint;
-        //     console.log(hint);
-        // });
+        db.collection("question").doc("question").collection("FINAL").get().then((docs) => { // 「doc」→「docs」に変更
+            // 「forEach」で1つずつ取り出す
+            docs.forEach((doc) => {
+                question.push({ Q: doc.data().Q, A: doc.data().A, hint: doc.data().hint });
+            });
+            console.log(question[num].Q);
+            questionArea.innerHTML = question[num].Q;
+            answer = question[num].A;
+            hint = question[num].hint;
+            console.log(hint);
+        });
         console.log(hint);
         console.log(question);
         button.addEventListener('click', () => {
-            if (!answer) {
-                result.innerHTML = `ヒント:${hint}`;
-            } else if (answer == answerArea.value) {
+            stop = true;
+            if (answer == answerArea.value) {
                 let times = new Date();
                 const Ehour = times.getHours();
                 const Emin = times.getMinutes();
                 const Esec = times.getSeconds();
                 const Esum = Ehour * 3600 + Emin * 60 + Esec;
-                db.collection("user").doc(name).set({
-                    Ehour: Ehour,
-                    Emin: Emin,
-                    Esec: Esec,
-                    question: 6
-                }, { merge: true });
+                console.log(Esum);
                 db.collection("user").doc(name).get().then((doc) => {
-                    hour = doc.data().hour;
-                    min = doc.data().min;
-                    sec = doc.data().sec;
+                    Stime = { one: doc.data().hour, two: doc.data().min, three: doc.data().sec };
+                    console.log(Stime);
+                    Shour = Stime.one;
+                    Smin = Stime.two;
+                    Ssec = Stime.three;
+                    const Ssum = Shour * 3600 + Smin * 60 + Ssec;
+                    console.log(Ssum);
+                    const Etime = Esum - Ssum;
+                    console.log(Etime);
+                    const Rsec = Etime % 60;
+                    const Rmin = Math.floor((Etime / 60) % 60);
+                    const Rhour = Math.floor(Etime / 3600);
+                    const Rtime = `${Rhour}:${Rmin}:${Rsec}`;
+                    console.log(Rtime);
+                    db.collection("user").doc(name).set({
+                        Ehour: Ehour,
+                        Emin: Emin,
+                        Esec: Esec,
+                        Rtime: Rtime,
+                        question: 6
+                    }, { merge: true });
+                    result.innerHTML = '<span class="red">正解！！</span><br>';
                 })
-                const sum = hour * 3600 + min * 60 + sec;
-                result.innerHTML = '<span class="red">正解！！</span><br>';
             } else {
-                result.innerHTML = `<span class="blue">違うよ!</span><br>ヒント:${hint}`;
+                result.innerHTML = `<span class="blue">違うよ!</span>`;
+                setTimeout(function () {
+                    location.reload();
+                }, 3000);
             }
         })
     </script>

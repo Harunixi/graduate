@@ -206,7 +206,6 @@ body {
 }
 
 .invisible {
-  opacity: 0;
-  position: absolute;
+  display: none;
 }
 /*# sourceMappingURL=style.css.map */
