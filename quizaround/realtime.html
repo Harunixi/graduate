@@ -47,29 +47,29 @@
                 <h2 class="main__ranking-title">Ranking</h2>
                 <div class="main__ranking-flex" id="1st">
                     <p class="main__ranking-rank" id="gold">1st</p>
-                    <p class="main__ranking-name"></p>
-                    <p class="main__ranking-time"></p>
+                    <p class="main__ranking-name first"></p>
+                    <p class="main__ranking-time first"></p>
                 </div>
                 <div class="main__ranking-flex" id="2nd">
                     <p class="main__ranking-rank" id="silver">2nd</p>
-                    <p class="main__ranking-name"></p>
-                    <p class="main__ranking-time"></p>
+                    <p class="main__ranking-name second"></p>
+                    <p class="main__ranking-time second"></p>
                 </div>
                 <div class="main__ranking-flex" id="3rd">
                     <p class="main__ranking-rank" id="bronze">3rd</p>
-                    <p class="main__ranking-name"></p>
-                    <p class="main__ranking-time"></p>
+                    <p class="main__ranking-name third"></p>
+                    <p class="main__ranking-time third"></p>
                 </div>
                 <div class="main__ranking-flex" id="4th">
                     <p class="main__ranking-rank">4th
                     </p>
-                    <p class="main__ranking-name"></p>
-                    <p class="main__ranking-time"></p>
+                    <p class="main__ranking-name fourth"></p>
+                    <p class="main__ranking-time fourth"></p>
                 </div>
                 <div class="main__ranking-flex" id="5th">
                     <p class="main__ranking-rank">5th</p>
-                    <p class="main__ranking-name"></p>
-                    <p class="main__ranking-time"></p>
+                    <p class="main__ranking-name fifth"></p>
+                    <p class="main__ranking-time fifth"></p>
                 </div>
             </div>
         </div>
@@ -108,10 +108,12 @@
         let q4Count = 0;
         let q5 = document.querySelector("#q5 .main__realtime-member");
         let q5Count = 0;
+        let rankName = document.querySelectorAll(".main__ranking-name");
+        let rankTime = document.querySelectorAll(".main__ranking-time");
         db.collection("user").get().then((docs) => { // 「doc」→「docs」に変更
             // 「forEach」で1つずつ取り出す
             docs.forEach((doc) => {
-                user.push({ user: doc.data().name, question: doc.data().question, time: (doc.data().hour * 3600) + (doc.data().min * 60) + doc.data().sec });
+                user.push({ user: doc.data().name, question: doc.data().question, time: doc.data().Rtime });
                 if (doc.data().question == 0) {
                     q1Count++;
                 } else if (doc.data().question == 1) {
@@ -129,6 +131,20 @@
                 q4.innerText = q4Count + "名";
                 q5.innerText = q5Count + "名";
             });
+            for (const time of user) {
+                if (time.time == undefined) {
+                    time.time = "no time";
+                }
+            }
+            let result = user.sort(function (a, b) {
+                return (a.time < b.time) ? -1 : 1;  //オブジェクトの昇順ソート
+            });
+            for (let i = 0; i < user.length; i++) {
+                if (!(user[i].time == "no time")) {
+                    rankName[i].innerText = user[i].user;
+                    rankTime[i].innerText = user[i].time;
+                }
+            }
         });
     </script>
 </body>
