@@ -51,7 +51,7 @@
         // 時間の取得
         let name;
         let question = [];
-        const num = Math.floor(Math.random() * 4);
+        const num = Math.floor(Math.random() * 5);
         console.log(num);
         const questionArea = document.querySelector('.main__question');
         let answer;
@@ -102,7 +102,7 @@
                 db.collection("user").doc(name).set({
                     question: 4
                 }, { merge: true });
-                result.innerHTML = '<span class="red">正解！！</span><br>次のQRコードの場所のヒントは「」';
+                result.innerHTML = '<span class="red">正解！！</span><br>次のQRコードの場所のヒントは「WS1の展示場にある、授業をするときに使う大きな白い板」';
             } else {
                 result.innerHTML = `<span class="blue">違うよ!</span><br>ヒント:${hint}`;
             }

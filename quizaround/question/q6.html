@@ -70,7 +70,7 @@
         const keyword = document.getElementById('keyword');
         const form = document.querySelectorAll('.main__form');
         let question = [];
-        const num = Math.floor(Math.random() * 2);
+        const num = Math.floor(Math.random() * 6);
         console.log(num);
         const questionArea = document.querySelector('.main__question');
         let answer;
@@ -131,9 +131,15 @@
                     if (!keyword.value) {
                         alert('キーワードが未入力です。')
                     } else if (keyword.value == doc.data().number) {
-                        name = user.value;
-                        form[0].classList.add('invisible');
-                        form[1].classList.remove('invisible');
+                        db.collection("user").doc(user.value).get().then((doc) => {
+                            if (doc.data().question == 5) {
+                                name = user.value;
+                                form[0].classList.add('invisible');
+                                form[1].classList.remove('invisible');
+                            } else {
+                                alert("すべての問題を解いてください！")
+                            }
+                        })
                     } else {
                         alert('キーワードが間違っています。')
                     }
@@ -222,10 +228,10 @@
                         Rtime: Rtime,
                         question: 6
                     }, { merge: true });
-                    result.innerHTML = '<span class="red">正解！！</span><br>';
+                    result.innerHTML = `<span class="red">正解！！</span><br>かかった時間=> ${Rtime}`;
                 })
             } else {
-                result.innerHTML = `<span class="blue">違うよ!</span>`;
+                result.innerHTML = `<span class="blue">違うよ!</span><br>もう一度入力からやり直してください。`;
                 setTimeout(function () {
                     location.reload();
                 }, 3000);

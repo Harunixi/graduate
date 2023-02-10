@@ -102,7 +102,7 @@
                 db.collection("user").doc(name).set({
                     question: 2
                 }, { merge: true });
-                result.innerHTML = '<span class="red">正解！！</span><br>次のQRコードの場所のヒントは「」';
+                result.innerHTML = '<span class="red">正解！！</span><br>次のQRコードの場所のヒントは「3Fにある、皆の憩いの場」';
             } else {
                 result.innerHTML = `<span class="blue">違うよ!</span><br>ヒント:${hint}`;
             }
