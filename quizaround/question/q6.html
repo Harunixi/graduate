@@ -219,7 +219,19 @@
                     const Rsec = Etime % 60;
                     const Rmin = Math.floor((Etime / 60) % 60);
                     const Rhour = Math.floor(Etime / 3600);
-                    const Rtime = `${Rhour}:${Rmin}:${Rsec}`;
+                    if (Rmin < 10) {
+                        if (Rsec < 10) {
+                            const Rtime = `${Rhour}:0${Rmin}:0${Rsec}`;
+                        } else {
+                            const Rtime = `${Rhour}:0${Rmin}:${Rsec}`;
+                        }
+                    } else {
+                        if (Rsec < 10) {
+                            const Rtime = `${Rhour}:${Rmin}:0${Rsec}`;
+                        } else {
+                            const Rtime = `${Rhour}:${Rmin}:${Rsec}`;
+                        }
+                    }
                     console.log(Rtime);
                     db.collection("user").doc(name).set({
                         Ehour: Ehour,
